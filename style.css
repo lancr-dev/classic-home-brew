@@ -681,6 +681,7 @@ button[hidden] {
 .hero-copy {
   position: relative;
   z-index: 2;
+  container-type: inline-size;
   padding-block: 0.5rem;
 }
 
@@ -710,7 +711,10 @@ button[hidden] {
 
 .hero h1 em {
   color: var(--color-decorative);
+  /* Keep the tagline on one line within its responsive text column. */
+  font-size: min(1em, 12cqi);
   font-weight: 400;
+  white-space: nowrap;
 }
 
 .hero-description {
