@@ -2703,6 +2703,11 @@ button[hidden] {
 
   .contact-info {
     grid-template-columns: minmax(0, 1fr);
+    text-align: center;
+  }
+
+  .contact-socials .social-links {
+    justify-content: center;
   }
 
   .contact-map-heading,
@@ -2898,17 +2903,27 @@ button[hidden] {
 }
 
 @media (max-width: 36rem) {
+  .site-footer {
+    text-align: center;
+  }
+
   .footer-grid {
     grid-template-columns: minmax(0, 1fr);
     gap: 2.25rem;
   }
 
+  .footer-socials .social-links {
+    justify-content: center;
+  }
+
   .footer-links {
+    grid-template-columns: minmax(0, 1fr);
     max-width: 24rem;
+    margin-inline: auto;
   }
 
   .footer-bottom {
-    align-items: flex-start;
+    align-items: center;
     flex-direction: column;
   }
 }
@@ -2986,10 +3001,14 @@ button[hidden] {
   }
 
   .hero-copy {
+    width: 100%;
     max-width: 32rem;
+    margin-inline: auto;
+    text-align: center;
   }
 
   .hero-eyebrow {
+    justify-content: center;
     margin-bottom: 1.25rem;
   }
 
@@ -3000,11 +3019,19 @@ button[hidden] {
   .hero-description {
     max-width: 27rem;
     margin-block: 1.3rem 1.5rem;
+    margin-inline: auto;
     font-size: 0.8rem;
   }
 
   .hero-location {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
     margin-top: 1.75rem;
+  }
+
+  .hero-location .icon {
+    margin-top: 0;
   }
 
   .hero-visual {
