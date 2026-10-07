@@ -10,6 +10,10 @@ faithful to the original feedback, and include any significant caveats. The
 section identifies the text as summaries; individual star ratings are not
 displayed because the supplied reviews do not include them.
 
+The overall Google rating from `BUSINESS_INFORMATION.md` is displayed in the
+`.reviews-rating` badge beneath the introduction. Update its value in
+`index.html` when the supplied business rating changes.
+
 Keep the rows roughly balanced. Their animation distance, speed, and number of
 loop copies are calculated automatically by `initializeReviewCarousels()` in
 `script.js`. Never add duplicate cards just to create the loop: generated copies
