@@ -1428,6 +1428,193 @@ button[hidden] {
   }
 }
 
+/* Look & feel: named grid areas keep photo placement independent of source order. */
+.look-section {
+  padding-block: clamp(4.5rem, 8vw, 7rem);
+  border-top: 1px solid var(--color-border);
+  background: rgb(183 201 144 / 9%);
+}
+
+.look-heading {
+  text-align: center;
+}
+
+.look-title {
+  color: var(--color-heading);
+  font-family: var(--font-heading);
+  font-size: clamp(2.65rem, 5.2vw, 4.25rem);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.look-title em {
+  color: var(--color-brown);
+  font-weight: 400;
+}
+
+.look-intro {
+  max-width: 36rem;
+  margin: 1.1rem auto 0;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  line-height: 1.8;
+  text-wrap: pretty;
+}
+
+.look-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr 1fr;
+  grid-template-rows: repeat(6, minmax(0, 1fr));
+  grid-template-areas:
+    'window interior garden'
+    'window interior garden'
+    'window interior patio'
+    'evening interior patio'
+    'evening interior welcome'
+    'evening interior welcome';
+  gap: clamp(0.65rem, 1.3vw, 1rem);
+  aspect-ratio: 1.68;
+  margin-top: clamp(2rem, 4vw, 3rem);
+}
+
+.look-card {
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid rgb(36 54 74 / 8%);
+  border-radius: 1rem;
+  background: var(--color-navy);
+  color: var(--color-cream);
+}
+
+.look-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--look-position, center);
+}
+
+.look-card::after {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgb(36 54 74 / 96%),
+    rgb(36 54 74 / 82%) 5rem,
+    transparent 11rem
+  );
+  content: '';
+  pointer-events: none;
+}
+
+.look-card figcaption {
+  position: absolute;
+  z-index: 2;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  left: 1.25rem;
+}
+
+.look-caption-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.look-caption-title {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: clamp(1.125rem, 1.65vw, 1.5rem);
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+.look-card--interior {
+  grid-area: interior;
+  --look-position: 48% 55%;
+}
+
+.look-card--window {
+  grid-area: window;
+  --look-position: 50% 55%;
+}
+
+.look-card--evening {
+  grid-area: evening;
+  --look-position: 50% 60%;
+}
+
+.look-card--garden {
+  grid-area: garden;
+}
+
+.look-card--patio {
+  grid-area: patio;
+}
+
+.look-card--welcome {
+  grid-area: welcome;
+  --look-position: 50% 56%;
+}
+
+@media (max-width: 68rem) {
+  .look-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+    grid-template-areas:
+      'interior window'
+      'interior garden'
+      'evening patio'
+      'evening welcome';
+    aspect-ratio: 1 / 1.08;
+  }
+}
+
+@media (max-width: 34rem) {
+  .look-section {
+    padding-block: 3.75rem;
+  }
+
+  .look-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    grid-template-areas:
+      'interior'
+      'window'
+      'evening'
+      'garden'
+      'patio'
+      'welcome';
+    aspect-ratio: auto;
+  }
+
+  .look-card {
+    aspect-ratio: 4 / 3;
+  }
+
+  .look-card--interior {
+    aspect-ratio: 4 / 5;
+  }
+
+  .look-card figcaption {
+    right: 1.125rem;
+    bottom: 1.125rem;
+    left: 1.125rem;
+  }
+}
+
 /* Tablet and mobile */
 @media (max-width: 68rem) {
   :root {
