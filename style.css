@@ -1615,6 +1615,301 @@ button[hidden] {
   }
 }
 
+/* Reviews: one source list per row; JavaScript adds hidden loop copies. */
+.reviews-section {
+  --reviews-gap: clamp(1rem, 1.8vw, 1.5rem);
+  padding-block: clamp(4.5rem, 8vw, 7rem);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.reviews-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: clamp(2rem, 4vw, 3.5rem);
+}
+
+.reviews-intro {
+  min-width: 0;
+  max-width: 42rem;
+}
+
+.reviews-section .section-kicker {
+  color: var(--color-accent);
+}
+
+.reviews-title {
+  font-family: var(--font-heading);
+  font-size: clamp(2.65rem, 5.2vw, 4.5rem);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
+}
+
+.reviews-title em {
+  color: var(--color-accent);
+  font-weight: 400;
+}
+
+.reviews-description {
+  max-width: 35rem;
+  margin-top: 1.25rem;
+  color: var(--color-stone);
+  font-size: 0.875rem;
+  line-height: 1.8;
+  text-wrap: pretty;
+}
+
+.reviews-motion-toggle {
+  flex-shrink: 0;
+  border: 1px solid rgb(244 235 221 / 40%);
+  background: transparent;
+  color: var(--color-on-primary);
+  font-size: 0.75rem;
+}
+
+.reviews-motion-toggle:hover {
+  border-color: var(--color-secondary);
+  background: var(--color-secondary);
+  color: var(--color-on-secondary);
+}
+
+.reviews-play-icon,
+.reviews-section[data-reviews-paused='true'] .reviews-pause-icon {
+  display: none;
+}
+
+.reviews-section[data-reviews-paused='true'] .reviews-play-icon {
+  display: block;
+}
+
+.reviews-rows {
+  display: grid;
+  gap: var(--reviews-gap);
+}
+
+.reviews-row {
+  padding: 0.5rem var(--page-gutter) 1rem;
+  overflow-x: auto;
+  scrollbar-color: var(--color-secondary) var(--color-navy);
+  scrollbar-width: thin;
+}
+
+.reviews-track,
+.reviews-group {
+  display: flex;
+  width: max-content;
+}
+
+.reviews-group {
+  flex-shrink: 0;
+  gap: var(--reviews-gap);
+  padding-inline-end: var(--reviews-gap);
+}
+
+.reviews-group[data-review-copy] {
+  display: none;
+}
+
+.review-card {
+  flex: 0 0 auto;
+  width: min(24rem, calc(100vw - var(--page-gutter) * 2));
+  padding: clamp(1.25rem, 2.2vw, 2rem);
+  border: 1px solid rgb(244 235 221 / 20%);
+  border-radius: 1.25rem;
+  background: rgb(244 235 221 / 4%);
+}
+
+.review-card figure {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 15rem;
+  margin: 0;
+}
+
+.review-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  color: var(--color-stone);
+  font-size: 0.625rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.review-card-mark {
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-right: 1.75rem;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow:
+    0.85rem 0 0 var(--color-secondary),
+    1.7rem 0 0 var(--color-stone);
+}
+
+.review-summary {
+  flex-grow: 1;
+  font-size: 0.875rem;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+}
+
+.review-author {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgb(244 235 221 / 20%);
+}
+
+.review-avatar {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: var(--color-secondary);
+  color: var(--color-on-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.review-card:nth-child(3n + 2) .review-avatar {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.review-card:nth-child(3n) .review-avatar {
+  background: var(--color-cream);
+  color: var(--color-navy);
+}
+
+.review-author-name {
+  min-width: 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.reviews-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  color: var(--color-stone);
+  font-size: 0.75rem;
+}
+
+.reviews-source-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  color: var(--color-on-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.reviews-source-link:hover {
+  color: var(--color-secondary);
+}
+
+.reviews-section :focus-visible {
+  outline-color: var(--color-accent);
+}
+
+.reviews-row:focus-visible {
+  outline-offset: -3px;
+}
+
+.reviews-enhanced .reviews-row {
+  overflow-x: hidden;
+}
+
+.reviews-enhanced .reviews-group[data-review-copy] {
+  display: flex;
+}
+
+.reviews-enhanced .reviews-track {
+  animation: reviews-scroll var(--reviews-duration) linear infinite;
+}
+
+.reviews-enhanced .reviews-row--reverse .reviews-track {
+  animation-direction: reverse;
+}
+
+.reviews-enhanced[data-reviews-visible='false'] .reviews-track,
+.reviews-enhanced .reviews-row:hover .reviews-track {
+  animation-play-state: paused;
+}
+
+/* Pausing or focusing reveals the source list for native touch/keyboard scrolling. */
+.reviews-enhanced[data-reviews-paused='true'] .reviews-row,
+.reviews-enhanced .reviews-row:focus-within {
+  overflow-x: auto;
+}
+
+.reviews-enhanced[data-reviews-paused='true'] .reviews-track,
+.reviews-enhanced .reviews-row:focus-within .reviews-track {
+  animation: none;
+  transform: none;
+}
+
+.reviews-enhanced[data-reviews-paused='true'] .reviews-group[data-review-copy],
+.reviews-enhanced .reviews-row:focus-within .reviews-group[data-review-copy] {
+  display: none;
+}
+
+@keyframes reviews-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-1 * var(--reviews-distance)));
+  }
+}
+
+@media (max-width: 40rem) {
+  .reviews-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .reviews-section {
+    padding-block: 3.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reviews-enhanced .reviews-row {
+    overflow-x: auto;
+  }
+
+  .reviews-enhanced .reviews-track {
+    animation: none;
+    transform: none;
+  }
+
+  .reviews-enhanced .reviews-group[data-review-copy] {
+    display: none;
+  }
+
+  .reviews-motion-toggle {
+    display: none;
+  }
+}
+
 /* FAQ: native details elements own disclosure state and keyboard behavior. */
 .faq-section {
   padding-block: clamp(4.5rem, 8vw, 7rem);

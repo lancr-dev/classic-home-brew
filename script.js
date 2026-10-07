@@ -231,5 +231,127 @@ function initializeCounters() {
   if (pageLoaded) updateVisibility();
 }
 
+function initializeReviewCarousels() {
+  const section = document.querySelector('#reviews');
+  if (!section) return;
+
+  const toggle = section.querySelector('.reviews-motion-toggle');
+  const toggleLabel = toggle?.querySelector('[data-reviews-toggle-label]');
+  const browseHint = section.querySelector('#reviews-browse-hint');
+  const rows = [...section.querySelectorAll('.reviews-row')]
+    .map((element) => ({
+      element,
+      track: element.querySelector('.reviews-track'),
+      group: element.querySelector('.reviews-group'),
+    }))
+    .filter(({ track, group }) => track && group?.children.length);
+
+  if (!toggle || !toggleLabel || !browseHint || !rows.length) return;
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const pixelsPerSecond = 36;
+  let paused = false;
+
+  const refreshRows = () => {
+    if (reducedMotion.matches) return;
+
+    rows.forEach(({ element, track, group }) => {
+      // Include the trailing gap so the last card joins the first without a jump.
+      const distance = group.getBoundingClientRect().width;
+      if (distance <= 0) return;
+
+      const copiesNeeded = Math.max(1, Math.ceil(element.clientWidth / distance));
+      const copies = [...track.querySelectorAll('[data-review-copy]')];
+
+      if (copies.length !== copiesNeeded) {
+        copies.forEach((copy) => copy.remove());
+        for (let index = 0; index < copiesNeeded; index += 1) {
+          const copy = group.cloneNode(true);
+          copy.setAttribute('data-review-copy', '');
+          copy.setAttribute('aria-hidden', 'true');
+          copy.inert = true;
+          copy.removeAttribute('id');
+          copy.querySelectorAll('[id]').forEach((node) => {
+            node.removeAttribute('id');
+          });
+          track.append(copy);
+        }
+      }
+
+      track.style.setProperty('--reviews-distance', `${distance}px`);
+      track.style.setProperty(
+        '--reviews-duration',
+        `${distance / pixelsPerSecond}s`,
+      );
+    });
+  };
+
+  const updateMotionPreference = () => {
+    section.classList.remove('reviews-enhanced');
+    toggle.hidden = reducedMotion.matches;
+    browseHint.textContent = reducedMotion.matches
+      ? 'Swipe a row or use the arrow keys to browse.'
+      : 'Pause the motion, or focus a row, to browse at your own pace.';
+
+    if (reducedMotion.matches) {
+      rows.forEach(({ track }) => {
+        track.querySelectorAll('[data-review-copy]').forEach((copy) => {
+          copy.remove();
+        });
+      });
+    } else {
+      refreshRows();
+      rows.forEach(({ element }) => {
+        element.scrollLeft = 0;
+      });
+      section.classList.add('reviews-enhanced');
+    }
+  };
+
+  section.dataset.reviewsPaused = 'false';
+  toggle.addEventListener('click', () => {
+    paused = !paused;
+    section.dataset.reviewsPaused = String(paused);
+    toggleLabel.textContent = paused ? 'Resume motion' : 'Pause motion';
+    rows.forEach(({ element }) => {
+      element.scrollLeft = 0;
+    });
+  });
+
+  rows.forEach(({ element }) => {
+    element.addEventListener('focusout', (event) => {
+      if (
+        !element.contains(event.relatedTarget) &&
+        !paused &&
+        !reducedMotion.matches
+      ) {
+        element.scrollLeft = 0;
+      }
+    });
+  });
+
+  if ('ResizeObserver' in window) {
+    const resizeObserver = new ResizeObserver(refreshRows);
+    rows.forEach(({ element }) => resizeObserver.observe(element));
+  } else {
+    window.addEventListener('resize', refreshRows, { passive: true });
+  }
+
+  if ('IntersectionObserver' in window) {
+    section.dataset.reviewsVisible = 'false';
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        section.dataset.reviewsVisible = String(entry.isIntersecting);
+      },
+      { rootMargin: '100px' },
+    );
+    visibilityObserver.observe(section);
+  }
+
+  reducedMotion.addEventListener('change', updateMotionPreference);
+  updateMotionPreference();
+}
+
 initializeNavigation();
 initializeCounters();
+initializeReviewCarousels();
