@@ -3016,6 +3016,10 @@ button[hidden] {
     font-size: clamp(3rem, 10vw, 4.8rem);
   }
 
+  .hero-coffee-phrase {
+    white-space: nowrap;
+  }
+
   .hero-description {
     max-width: 27rem;
     margin-block: 1.3rem 1.5rem;
