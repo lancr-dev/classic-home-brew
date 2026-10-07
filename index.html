@@ -34,6 +34,11 @@
         "description": "A cozy contemporary café in Imus with coffee, comfort food, and garden alfresco seating.",
         "telephone": "+63-46-454-9272",
         "email": "homebrewcafe2015@gmail.com",
+        "sameAs": [
+          "https://www.facebook.com/ClassicHomeBrewCafe",
+          "https://www.instagram.com/classic_homebrewcafe/",
+          "https://www.tiktok.com/@homebrewcafeimus"
+        ],
         "address": {
           "@type": "PostalAddress",
           "streetAddress": "General E Topacio St",
@@ -190,7 +195,7 @@
               A cup worth slowing down for. A cozy corner to call your own. Come
               for the coffee, stay for the moments that feel like home.
             </p>
-            <a class="button button-accent explore-button" href="#cafe-stats">
+            <a class="button button-accent explore-button" href="#about">
               Explore
               <span class="button-arrow" aria-hidden="true">
                 <svg class="icon" viewBox="0 0 24 24" fill="none">
@@ -301,7 +306,152 @@
           </div>
         </div>
       </section>
-      <!-- Next sections use: about, menu, look-and-feel, faq, contact. -->
+      <section class="about-section" id="about" aria-labelledby="about-title">
+        <div class="container about-inner">
+          <div class="about-collage">
+            <svg
+              class="about-sprig"
+              viewBox="0 0 64 96"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path d="M18 89C36 68 24 35 44 9" />
+              <path d="M27 66C9 67 5 57 6 48C17 47 27 51 27 66Z" />
+              <path d="M31 47C45 50 56 40 57 29C43 26 33 33 31 47Z" />
+              <path d="M35 29C22 31 17 23 18 13C29 12 36 17 35 29Z" />
+            </svg>
+
+            <figure class="about-photo about-photo-main">
+              <img
+                src="./assets/images/about/coffee-bar-960.webp"
+                srcset="
+                  ./assets/images/about/coffee-bar-480.webp   480w,
+                  ./assets/images/about/coffee-bar-960.webp   960w,
+                  ./assets/images/about/coffee-bar-1360.webp 1360w
+                "
+                sizes="(max-width: 832px) 70vw, (max-width: 1440px) 36vw, 480px"
+                alt="Classic Home Brew's coffee bar with deep navy walls, warm pendant lights, and wooden shelves."
+                width="1360"
+                height="910"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption>Made to feel like home.</figcaption>
+            </figure>
+
+            <figure class="about-photo about-photo-garden">
+              <img
+                src="./assets/images/about/garden-patio-640.webp"
+                srcset="
+                  ./assets/images/about/garden-patio-320.webp 320w,
+                  ./assets/images/about/garden-patio-640.webp 640w
+                "
+                sizes="(max-width: 832px) 33vw, (max-width: 1440px) 18vw, 240px"
+                alt="Guests relaxing on the covered garden patio surrounded by greenery and gravel seating areas."
+                width="764"
+                height="1020"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption>A little greener.</figcaption>
+            </figure>
+
+            <figure class="about-photo about-photo-corner">
+              <img
+                src="./assets/images/about/cozy-corner-640.webp"
+                srcset="
+                  ./assets/images/about/cozy-corner-320.webp 320w,
+                  ./assets/images/about/cozy-corner-640.webp 640w
+                "
+                sizes="(max-width: 832px) 33vw, (max-width: 1440px) 18vw, 240px"
+                alt="A cozy window-side table with dark wood furniture, a warm lamp, and indoor greenery."
+                width="764"
+                height="1020"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption>Your cozy corner.</figcaption>
+            </figure>
+
+            <p class="about-photo-note" aria-hidden="true">
+              Cozy corners.<br />Good company.
+            </p>
+          </div>
+
+          <div class="about-copy">
+            <p class="section-kicker">About us</p>
+            <h2 class="about-title" id="about-title">
+              A place to pause.<br />A feeling of <em>home.</em>
+            </h2>
+            <div class="about-story">
+              <p>
+                At Classic Home Brew, we don't just brew coffee, we brew
+                memories. Here on General E Topacio Street in Imus, cozy city
+                comforts meet a peaceful little garden escape.
+              </p>
+              <p>
+                Settle into warm leather seating, deep navy interiors, and
+                corners filled with greenery. Or step outside to our covered
+                patios and garden seating. From coffee dates and casual catch-ups
+                to work and study sessions, there's a spot to make yourself at
+                home.
+              </p>
+            </div>
+
+            <nav class="about-socials" aria-label="Classic Home Brew social media">
+              <p class="socials-label">A little more Home Brew</p>
+              <ul class="social-links">
+                <li>
+                  <a
+                    class="social-link"
+                    href="https://www.facebook.com/ClassicHomeBrewCafe"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span
+                      class="social-icon social-icon-facebook"
+                      aria-hidden="true"
+                    ></span>
+                    Facebook
+                    <span class="visually-hidden">(opens in a new tab)</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="social-link"
+                    href="https://www.instagram.com/classic_homebrewcafe/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span
+                      class="social-icon social-icon-instagram"
+                      aria-hidden="true"
+                    ></span>
+                    Instagram
+                    <span class="visually-hidden">(opens in a new tab)</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="social-link"
+                    href="https://www.tiktok.com/@homebrewcafeimus"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span
+                      class="social-icon social-icon-tiktok"
+                      aria-hidden="true"
+                    ></span>
+                    TikTok
+                    <span class="visually-hidden">(opens in a new tab)</span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </section>
+      <!-- Next sections use: menu, look-and-feel, faq, contact. -->
     </main>
   </body>
 </html>
