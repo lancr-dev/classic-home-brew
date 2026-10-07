@@ -518,7 +518,13 @@ function initializeMomentsGallery() {
   section.classList.add('moments-enhanced');
 }
 
+function initializeFooter() {
+  const year = document.querySelector('.site-footer [data-copyright-year]');
+  if (year) year.textContent = String(new Date().getFullYear());
+}
+
 initializeNavigation();
 initializeCounters();
 initializeReviewCarousels();
 initializeMomentsGallery();
+initializeFooter();
