@@ -25,6 +25,7 @@
       href="./assets/images/logo/home-brew-logo.png"
       type="image/png"
     />
+    <script src="./theme.js"></script>
     <link rel="stylesheet" href="./style.css" />
     <script src="./script.js" defer></script>
     <script type="application/ld+json">
@@ -100,20 +101,49 @@
             <li><a href="#faq">FAQ</a></li>
             <li><a href="#contact">Contact</a></li>
           </ul>
-          <a
-            class="button button-primary inquiry-button"
-            href="#contact"
-          >
-            Inquiry
-            <svg
-              class="icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              aria-hidden="true"
+          <div class="navigation-actions">
+            <a
+              class="button button-primary inquiry-button"
+              href="#contact"
             >
-              <path d="M6 18 18 6M6 6h12v12" />
-            </svg>
-          </a>
+              Inquiry
+              <svg
+                class="icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path d="M6 18 18 6M6 6h12v12" />
+              </svg>
+            </a>
+            <button
+              class="theme-toggle icon-button"
+              type="button"
+              data-theme-toggle
+              aria-label="Dark mode"
+              aria-pressed="false"
+              title="Switch to dark mode"
+              hidden
+            >
+              <svg
+                class="icon theme-icon-moon"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path d="M20.7 13.2A8.8 8.8 0 0 1 10.8 3.3 9 9 0 1 0 20.7 13.2Z" />
+              </svg>
+              <svg
+                class="icon theme-icon-sun"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" />
+              </svg>
+            </button>
+          </div>
         </nav>
 
         <button
@@ -138,16 +168,45 @@
     >
       <div class="drawer-top">
         <span class="eyebrow">Classic Home Brew</span>
-        <button
-          class="drawer-close icon-button"
-          type="button"
-          aria-label="Close navigation menu"
-          autofocus
-        >
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="m6 6 12 12M6 18 18 6" />
-          </svg>
-        </button>
+        <div class="drawer-actions">
+          <button
+            class="theme-toggle icon-button"
+            type="button"
+            data-theme-toggle
+            aria-label="Dark mode"
+            aria-pressed="false"
+            title="Switch to dark mode"
+            hidden
+          >
+            <svg
+              class="icon theme-icon-moon"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path d="M20.7 13.2A8.8 8.8 0 0 1 10.8 3.3 9 9 0 1 0 20.7 13.2Z" />
+            </svg>
+            <svg
+              class="icon theme-icon-sun"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" />
+            </svg>
+          </button>
+          <button
+            class="drawer-close icon-button"
+            type="button"
+            aria-label="Close navigation menu"
+            autofocus
+          >
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="m6 6 12 12M6 18 18 6" />
+            </svg>
+          </button>
+        </div>
       </div>
       <h2 class="drawer-title" id="drawer-title">
         Make yourself<br />at home.
