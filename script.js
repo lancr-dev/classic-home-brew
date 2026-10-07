@@ -352,6 +352,173 @@ function initializeReviewCarousels() {
   updateMotionPreference();
 }
 
+function initializeMomentsGallery() {
+  const section = document.querySelector('#moments');
+  if (!section) return;
+
+  const gallery = section.querySelector('.moments-gallery');
+  const viewport = section.querySelector('.moments-viewport');
+  const track = section.querySelector('.moments-track');
+  const cards = [...section.querySelectorAll('.moments-card')];
+  const arrows = [...section.querySelectorAll('[data-moments-step]')];
+  const status = section.querySelector('.moments-status');
+  const caption = section.querySelector('.moments-current-caption');
+  const count = section.querySelector('.moments-count');
+  const instructions = section.querySelector('#moments-instructions');
+
+  if (
+    !gallery ||
+    !viewport ||
+    !track ||
+    !status ||
+    !caption ||
+    !count ||
+    !instructions ||
+    cards.length < 2
+  ) {
+    return;
+  }
+
+  let currentIndex = 0;
+  let pointerStart;
+  let dragFrame;
+  let dragDistance = 0;
+
+  const resetDrag = () => {
+    const pointerId = pointerStart?.id;
+    pointerStart = undefined;
+    if (dragFrame !== undefined) window.cancelAnimationFrame(dragFrame);
+    dragFrame = undefined;
+    section.classList.remove('moments-dragging');
+    track.style.removeProperty('--moment-drag-offset');
+
+    if (pointerId !== undefined && viewport.hasPointerCapture(pointerId)) {
+      viewport.releasePointerCapture(pointerId);
+    }
+  };
+
+  const showPhoto = (index) => {
+    resetDrag();
+    currentIndex = ((index % cards.length) + cards.length) % cards.length;
+
+    cards.forEach((card, cardIndex) => {
+      // Circular offsets keep the next/previous photos beside the center at either end.
+      let offset = (cardIndex - currentIndex + cards.length) % cards.length;
+      if (offset > cards.length / 2) offset -= cards.length;
+
+      const isCurrent = offset === 0;
+      card.style.setProperty('--moment-offset', String(offset));
+      card.dataset.momentCurrent = String(isCurrent);
+      card.dataset.momentNeighbor = String(Math.abs(offset) === 1);
+      card.dataset.momentVisible = String(Math.abs(offset) <= 2);
+      card.setAttribute('role', 'group');
+      card.setAttribute('aria-roledescription', 'slide');
+      card.setAttribute(
+        'aria-label',
+        `Photo ${cardIndex + 1} of ${cards.length}`,
+      );
+      card.setAttribute('aria-hidden', String(!isCurrent));
+      card.inert = !isCurrent;
+    });
+
+    caption.textContent =
+      cards[currentIndex].querySelector('figcaption')?.textContent.trim() ||
+      'A moment at Classic Home Brew';
+    count.textContent =
+      `${String(currentIndex + 1).padStart(2, '0')} / ` +
+      String(cards.length).padStart(2, '0');
+  };
+
+  arrows.forEach((arrow) => {
+    arrow.hidden = false;
+    arrow.addEventListener('click', () => {
+      showPhoto(currentIndex + Number(arrow.dataset.momentsStep));
+    });
+  });
+
+  gallery.addEventListener('keydown', (event) => {
+    const destinations = {
+      ArrowLeft: currentIndex - 1,
+      ArrowRight: currentIndex + 1,
+      Home: 0,
+      End: cards.length - 1,
+    };
+    if (!Object.hasOwn(destinations, event.key)) return;
+    event.preventDefault();
+    showPhoto(destinations[event.key]);
+  });
+
+  viewport.addEventListener('pointerdown', (event) => {
+    if (!event.isPrimary || event.button !== 0) return;
+    resetDrag();
+    pointerStart = {
+      id: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+      width: cards[currentIndex].getBoundingClientRect().width,
+      dragging: false,
+    };
+    viewport.setPointerCapture(event.pointerId);
+  });
+
+  viewport.addEventListener('pointermove', (event) => {
+    if (!pointerStart || pointerStart.id !== event.pointerId) return;
+    const horizontalDistance = event.clientX - pointerStart.x;
+    const verticalDistance = event.clientY - pointerStart.y;
+
+    if (!pointerStart.dragging) {
+      if (
+        Math.abs(horizontalDistance) < 8 ||
+        Math.abs(horizontalDistance) <= Math.abs(verticalDistance) * 1.2
+      ) {
+        return;
+      }
+      pointerStart.dragging = true;
+      section.classList.add('moments-dragging');
+    }
+
+    // One gesture advances one photo; bound the drag to avoid exposing empty space.
+    dragDistance = Math.max(
+      -pointerStart.width,
+      Math.min(pointerStart.width, horizontalDistance),
+    );
+    if (dragFrame !== undefined) return;
+    dragFrame = window.requestAnimationFrame(() => {
+      dragFrame = undefined;
+      track.style.setProperty('--moment-drag-offset', `${dragDistance}px`);
+    });
+  });
+
+  viewport.addEventListener('pointerup', (event) => {
+    if (!pointerStart || pointerStart.id !== event.pointerId) return;
+    const horizontalDistance = event.clientX - pointerStart.x;
+    const verticalDistance = event.clientY - pointerStart.y;
+    const threshold = Math.max(40, pointerStart.width * 0.15);
+    const shouldAdvance =
+      pointerStart.dragging &&
+      Math.abs(horizontalDistance) >= threshold &&
+      Math.abs(horizontalDistance) > Math.abs(verticalDistance) * 1.2;
+    resetDrag();
+
+    if (shouldAdvance) {
+      showPhoto(currentIndex + (horizontalDistance < 0 ? 1 : -1));
+    }
+  });
+
+  viewport.addEventListener('pointercancel', resetDrag);
+  viewport.addEventListener('lostpointercapture', resetDrag);
+
+  gallery.setAttribute('aria-roledescription', 'carousel');
+  track.setAttribute('role', 'presentation');
+  instructions.textContent =
+    'Use the previous and next buttons, the Left and Right arrow keys, or swipe ' +
+    'or drag to browse photos. Home selects the first photo; End selects the last.';
+  showPhoto(0);
+  status.hidden = false;
+  section.classList.add('moments-enhanced');
+}
+
 initializeNavigation();
 initializeCounters();
 initializeReviewCarousels();
+initializeMomentsGallery();

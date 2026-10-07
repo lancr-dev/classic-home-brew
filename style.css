@@ -1910,6 +1910,243 @@ button[hidden] {
   }
 }
 
+/* Moments & memories: the source photo list also works without JavaScript. */
+.moments-section {
+  --moments-card-width: min(22rem, calc(100vw - 7rem));
+  --moments-gap: clamp(0.75rem, 1.5vw, 1.5rem);
+  padding-block: clamp(4.5rem, 8vw, 7rem);
+  background: var(--color-background);
+}
+
+.moments-heading {
+  text-align: center;
+}
+
+.moments-title {
+  color: var(--color-heading);
+  font-family: var(--font-heading);
+  font-size: clamp(2.65rem, 5.2vw, 4.25rem);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.moments-title em {
+  color: var(--color-brown);
+  font-weight: 400;
+}
+
+.moments-intro {
+  max-width: 36rem;
+  margin: 1.1rem auto 0;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  line-height: 1.8;
+  text-wrap: pretty;
+}
+
+.moments-gallery {
+  position: relative;
+  max-width: 100rem;
+  margin: clamp(2rem, 4vw, 3.5rem) auto 0;
+}
+
+.moments-viewport {
+  height: calc(var(--moments-card-width) * 4 / 3 + 2rem);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scrollbar-color: var(--color-brown) var(--color-stone);
+  scrollbar-width: thin;
+}
+
+.moments-track {
+  display: flex;
+  align-items: center;
+  gap: var(--moments-gap);
+  width: max-content;
+  height: 100%;
+  padding-inline: calc((min(100vw, 100rem) - var(--moments-card-width)) / 2);
+}
+
+.moments-card {
+  flex: 0 0 auto;
+  width: var(--moments-card-width);
+  scroll-snap-align: center;
+}
+
+.moments-card figure {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid rgb(36 54 74 / 12%);
+  border-radius: clamp(1rem, 2vw, 1.75rem);
+  background: var(--color-stone);
+}
+
+.moments-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--moment-image-position, center);
+}
+
+.moments-arrow {
+  position: absolute;
+  z-index: 4;
+  top: calc(50% - 24px);
+  width: 48px;
+  height: 48px;
+  border-color: rgb(36 54 74 / 20%);
+  background: var(--color-cream);
+  box-shadow: 0 4px 16px rgb(36 54 74 / 12%);
+  transition:
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+
+.moments-arrow:hover {
+  transform: scale(1.06);
+}
+
+.moments-arrow--previous {
+  left: max(0.5rem, calc(50% - var(--moments-card-width) / 2 - 3.5rem));
+}
+
+.moments-arrow--next {
+  right: max(0.5rem, calc(50% - var(--moments-card-width) / 2 - 3.5rem));
+}
+
+.moments-gallery:focus-visible {
+  outline-offset: -3px;
+}
+
+.moments-footer {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.moments-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.5rem 1.5rem;
+  color: var(--color-heading);
+}
+
+.moments-status[hidden] {
+  display: none;
+}
+
+.moments-current-caption {
+  font-family: var(--font-heading);
+  font-size: 1.375rem;
+}
+
+.moments-count {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.moments-browse-hint {
+  margin-top: 0.65rem;
+  color: var(--color-text-muted);
+  font-size: 0.6875rem;
+}
+
+.moments-enhanced .moments-viewport {
+  /* Transformed slides must not retain the fallback's native scroll snapping. */
+  overflow: hidden;
+  overflow: clip;
+  scroll-snap-type: none;
+  touch-action: pan-y pinch-zoom;
+  cursor: grab;
+  user-select: none;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 10%,
+    #000 90%,
+    transparent
+  );
+}
+
+.moments-enhanced .moments-track {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+}
+
+.moments-enhanced .moments-card {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  opacity: 0.3;
+  scroll-snap-align: none;
+  transform:
+    translate(-50%, -50%)
+    translateX(
+      calc(
+        var(--moment-offset) *
+        (var(--moments-card-width) * 0.92 + var(--moments-gap)) +
+        var(--moment-drag-offset, 0px)
+      )
+    )
+    scale(var(--moment-scale, 0.76));
+  transition:
+    transform 480ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 480ms ease,
+    visibility 480ms;
+}
+
+.moments-enhanced .moments-card[data-moment-neighbor='true'] {
+  --moment-scale: 0.88;
+  z-index: 2;
+  opacity: 0.65;
+}
+
+.moments-enhanced .moments-card[data-moment-current='true'] {
+  --moment-scale: 1;
+  z-index: 3;
+  opacity: 1;
+}
+
+.moments-enhanced.moments-dragging .moments-viewport {
+  cursor: grabbing;
+}
+
+.moments-enhanced.moments-dragging .moments-card {
+  transition: none;
+}
+
+.moments-enhanced .moments-card[data-moment-visible='false'] {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 36rem) {
+  .moments-section {
+    padding-block: 3.75rem;
+  }
+
+  .moments-title {
+    max-width: 20rem;
+    margin-inline: auto;
+  }
+
+  .moments-current-caption {
+    font-size: 1.2rem;
+  }
+}
+
 /* FAQ: native details elements own disclosure state and keyboard behavior. */
 .faq-section {
   padding-block: clamp(4.5rem, 8vw, 7rem);
