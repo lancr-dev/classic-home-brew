@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://classic-home-brew.vercel.app/sitemap.xml
