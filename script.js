@@ -601,6 +601,55 @@ function initializeMomentsGallery() {
   section.classList.add('moments-enhanced');
 }
 
+function initializeScrollReveals() {
+  const targets = [...document.querySelectorAll('[data-scroll-reveal]')];
+  if (!targets.length || !('IntersectionObserver' in window)) return;
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const activeClass = 'is-scroll-revealing';
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(({ target, isIntersecting }) => {
+        if (!isIntersecting) return;
+        // Reveal once per page visit, with no replay during small scroll changes.
+        observer.unobserve(target);
+        if (reducedMotion.matches || target.contains(document.activeElement)) {
+          return;
+        }
+        target.classList.add(activeClass);
+      });
+    },
+    { rootMargin: '0px 0px -24px 0px', threshold: 0 },
+  );
+
+  targets.forEach((target) => {
+    const bounds = target.getBoundingClientRect();
+    // Keep the first viewport (including restored scroll positions) fully visible.
+    if (bounds.top < window.innerHeight && bounds.bottom > 0) return;
+    observer.observe(target);
+  });
+
+  document.addEventListener('animationend', (event) => {
+    if (event.animationName === 'section-reveal') {
+      event.target.classList.remove(activeClass);
+    }
+  });
+
+  document.addEventListener('focusin', (event) => {
+    const target = event.target.closest('[data-scroll-reveal]');
+    if (!target) return;
+    // Keyboard users must never wait for content or focus indicators to appear.
+    observer.unobserve(target);
+    target.classList.remove(activeClass);
+  });
+
+  reducedMotion.addEventListener('change', () => {
+    if (reducedMotion.matches) {
+      targets.forEach((target) => target.classList.remove(activeClass));
+    }
+  });
+}
+
 function initializeFooter() {
   const year = document.querySelector('.site-footer [data-copyright-year]');
   if (year) year.textContent = String(new Date().getFullYear());
@@ -612,3 +661,4 @@ initializeCounters();
 initializeReviewCarousels();
 initializeMomentsGallery();
 initializeFooter();
+initializeScrollReveals();
