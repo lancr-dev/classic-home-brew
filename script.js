@@ -97,7 +97,10 @@ function initializeActiveNavigation() {
 
   const updateCurrentSection = () => {
     frameId = undefined;
-    const headerBottom = Math.max(0, header?.getBoundingClientRect().bottom ?? 0);
+    const headerBottom = Math.max(
+      0,
+      header?.getBoundingClientRect().bottom ?? 0,
+    );
     const scrollPadding =
       Number.parseFloat(
         getComputedStyle(document.documentElement).scrollPaddingTop,
@@ -343,7 +346,10 @@ function initializeReviewCarousels() {
       const distance = group.getBoundingClientRect().width;
       if (distance <= 0) return;
 
-      const copiesNeeded = Math.max(1, Math.ceil(element.clientWidth / distance));
+      const copiesNeeded = Math.max(
+        1,
+        Math.ceil(element.clientWidth / distance),
+      );
       const copies = [...track.querySelectorAll('[data-review-copy]')];
 
       if (copies.length !== copiesNeeded) {

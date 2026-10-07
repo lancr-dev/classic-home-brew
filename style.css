@@ -1289,7 +1289,8 @@ button[hidden] {
   overflow: hidden;
   border: 1px solid var(--color-navy);
   border-radius: 1.5rem;
-  background: linear-gradient(145deg, rgb(39 43 43 / 24%), transparent 70%),
+  background:
+    linear-gradient(145deg, rgb(39 43 43 / 24%), transparent 70%),
     var(--color-panel);
   color: var(--color-on-panel);
 }
@@ -2230,13 +2231,12 @@ button[hidden] {
   left: 50%;
   opacity: 0.3;
   scroll-snap-align: none;
-  transform:
-    translate(-50%, -50%)
+  transform: translate(-50%, -50%)
     translateX(
       calc(
         var(--moment-offset) *
-        (var(--moments-card-width) * 0.92 + var(--moments-gap)) +
-        var(--moment-drag-offset, 0px)
+          (var(--moments-card-width) * 0.92 + var(--moments-gap)) +
+          var(--moment-drag-offset, 0px)
       )
     )
     scale(var(--moment-scale, 0.76));
