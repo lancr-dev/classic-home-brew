@@ -74,6 +74,92 @@ function initializeNavigation() {
   document.documentElement.classList.add('navigation-enhanced');
 }
 
+function initializeActiveNavigation() {
+  const main = document.querySelector('main');
+  const header = document.querySelector('.site-header');
+  const drawer = document.querySelector('#mobile-navigation');
+  const links = [
+    ...document.querySelectorAll(
+      '.navigation-links a[href^="#"], .drawer-links a[href^="#"]',
+    ),
+  ];
+  const sections = [...(main?.querySelectorAll(':scope > section[id]') ?? [])];
+  const linkedIds = new Set(
+    links
+      .map((link) => link.getAttribute('href').slice(1))
+      .filter((id) => sections.some((section) => section.id === id)),
+  );
+
+  if (!links.length || !sections.length || !linkedIds.size) return;
+
+  let frameId;
+  let currentId;
+
+  const updateCurrentSection = () => {
+    frameId = undefined;
+    const headerBottom = Math.max(0, header?.getBoundingClientRect().bottom ?? 0);
+    const scrollPadding =
+      Number.parseFloat(
+        getComputedStyle(document.documentElement).scrollPaddingTop,
+      ) || 0;
+    // A short reading area tolerates font/layout shifts after anchor jumps and resizing.
+    const readingArea = Math.min(
+      64,
+      Math.max(0, window.innerHeight - headerBottom) * 0.15,
+    );
+    const activationLine = Math.min(
+      window.innerHeight - 1,
+      Math.max(headerBottom, scrollPadding) + readingArea,
+    );
+    let currentSection;
+    let lastVisibleSection;
+
+    sections.forEach((section) => {
+      const bounds = section.getBoundingClientRect();
+      if (bounds.height <= 0) return;
+      lastVisibleSection = section;
+      if (bounds.top <= activationLine) currentSection = section;
+    });
+
+    // The final section may be too short to reach the header on a tall viewport.
+    const atPageBottom =
+      window.scrollY + window.innerHeight >=
+      document.documentElement.scrollHeight - 2;
+    if (atPageBottom) currentSection = lastVisibleSection;
+
+    const nextId = linkedIds.has(currentSection?.id) ? currentSection.id : null;
+    if (nextId === currentId) return;
+    currentId = nextId;
+
+    links.forEach((link) => {
+      if (link.getAttribute('href') === `#${currentId}`) {
+        link.setAttribute('aria-current', 'location');
+      } else {
+        link.removeAttribute('aria-current');
+      }
+    });
+  };
+
+  const scheduleUpdate = () => {
+    if (frameId !== undefined) return;
+    frameId = window.requestAnimationFrame(updateCurrentSection);
+  };
+
+  window.addEventListener('scroll', scheduleUpdate, { passive: true });
+  window.addEventListener('resize', scheduleUpdate);
+  window.addEventListener('hashchange', scheduleUpdate);
+  window.addEventListener('pageshow', scheduleUpdate);
+  window.addEventListener('load', scheduleUpdate, { once: true });
+  drawer?.addEventListener('close', scheduleUpdate);
+
+  if (header && 'ResizeObserver' in window) {
+    const headerObserver = new ResizeObserver(scheduleUpdate);
+    headerObserver.observe(header);
+  }
+  document.fonts?.ready.then(scheduleUpdate);
+  scheduleUpdate();
+}
+
 function initializeCounters() {
   const stats = document.querySelector('#cafe-stats');
   if (!stats) return;
@@ -95,9 +181,8 @@ function initializeCounters() {
   const animationFrames = new Map();
   let visibilityFrameId;
   let statsObserver;
-  let hasAnimated = false;
+  let hasAnimated = reducedMotion.matches;
   let pageLoaded = document.readyState === 'complete';
-  let replayRequested = false;
 
   const renderProgress = (progress) => {
     counters.forEach(({ element, target }) => {
@@ -110,12 +195,6 @@ function initializeCounters() {
   const stopAnimation = () => {
     animationFrames.forEach((frameId) => window.cancelAnimationFrame(frameId));
     animationFrames.clear();
-  };
-
-  const resetCounters = () => {
-    stopAnimation();
-    hasAnimated = false;
-    renderProgress(0);
   };
 
   const animateCounter = ({ element, target }) => {
@@ -143,12 +222,16 @@ function initializeCounters() {
   };
 
   const startAnimation = () => {
-    resetCounters();
+    if (hasAnimated) return;
     hasAnimated = true;
+    stopAnimation();
+    renderProgress(0);
     counters.forEach(animateCounter);
   };
 
-  const updateVisibility = (replay = false) => {
+  const updateVisibility = () => {
+    if (!pageLoaded) return;
+
     const bounds = visibilityTarget.getBoundingClientRect();
     // The sticky navbar covers part of the viewport when scrolling back.
     const viewportTop = Math.max(
@@ -163,12 +246,12 @@ function initializeCounters() {
     const isInView =
       bounds.height > 0 && visibleHeight >= bounds.height * visibilityThreshold;
 
-    if (reducedMotion.matches) {
-      stopAnimation();
-      renderProgress(1);
-    } else if (!pageLoaded || !isInView) {
-      resetCounters();
-    } else if (!hasAnimated || (replay && animationFrames.size === 0)) {
+    // Re-arm only after fully leaving view, so threshold crossings cannot replay it.
+    if (visibleHeight === 0) {
+      hasAnimated = false;
+    } else if (isInView && reducedMotion.matches) {
+      hasAnimated = true;
+    } else if (isInView) {
       startAnimation();
     }
   };
@@ -188,20 +271,17 @@ function initializeCounters() {
     statsObserver.observe(visibilityTarget);
   };
 
-  const scheduleVisibilityCheck = (replay = false) => {
-    replayRequested ||= replay;
+  const scheduleVisibilityCheck = () => {
     if (visibilityFrameId !== undefined) return;
 
     visibilityFrameId = window.requestAnimationFrame(() => {
       visibilityFrameId = undefined;
-      const shouldReplay = replayRequested;
-      replayRequested = false;
-      updateVisibility(shouldReplay);
+      updateVisibility();
     });
   };
 
-  // Replay on the next scroll after completion, including within the viewport.
-  window.addEventListener('scroll', () => scheduleVisibilityCheck(true), {
+  // Scroll checks track entry and exit; an animation runs only once per visit.
+  window.addEventListener('scroll', scheduleVisibilityCheck, {
     passive: true,
   });
   window.addEventListener('resize', () => {
@@ -212,18 +292,21 @@ function initializeCounters() {
     'load',
     () => {
       pageLoaded = true;
-      scheduleVisibilityCheck(true);
+      scheduleVisibilityCheck();
     },
     { once: true },
   );
   window.addEventListener('pageshow', (event) => {
-    if (event.persisted) scheduleVisibilityCheck(true);
+    if (event.persisted) scheduleVisibilityCheck();
   });
 
   reducedMotion.addEventListener('change', () => {
-    stopAnimation();
-    hasAnimated = false;
-    updateVisibility(true);
+    if (reducedMotion.matches) {
+      hasAnimated = true;
+      stopAnimation();
+      renderProgress(1);
+    }
+    scheduleVisibilityCheck();
   });
 
   renderProgress(reducedMotion.matches ? 1 : 0);
@@ -524,6 +607,7 @@ function initializeFooter() {
 }
 
 initializeNavigation();
+initializeActiveNavigation();
 initializeCounters();
 initializeReviewCarousels();
 initializeMomentsGallery();

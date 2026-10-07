@@ -454,12 +454,12 @@ button[hidden] {
 }
 
 .navigation-links a:hover,
-.navigation-links a[aria-current] {
+.navigation-links a[aria-current='location'] {
   color: var(--color-primary);
 }
 
 .navigation-links a:hover::after,
-.navigation-links a[aria-current]::after {
+.navigation-links a[aria-current='location']::after {
   transform: scaleX(1);
 }
 
@@ -531,7 +531,7 @@ button[hidden] {
 }
 
 .drawer-links a:hover,
-.drawer-links a[aria-current] {
+.drawer-links a[aria-current='location'] {
   color: var(--color-link);
 }
 
