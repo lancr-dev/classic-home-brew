@@ -607,6 +607,113 @@ function initializeMomentsGallery() {
   section.classList.add('moments-enhanced');
 }
 
+function initializeFaqAccordion() {
+  const list = document.querySelector('#faq .faq-list');
+  if (!list) return;
+
+  const items = [...list.querySelectorAll('.faq-item')]
+    .map((element) => ({
+      element,
+      summary: element.querySelector('summary'),
+      answer: element.querySelector('.faq-answer'),
+      expanded: element.open,
+      animation: null,
+    }))
+    .filter(({ summary, answer }) => summary && answer);
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  const finishAnimation = (item) => {
+    item.animation?.cancel();
+    item.animation = null;
+    item.element.open = item.expanded;
+    item.element.style.removeProperty('height');
+    item.element.classList.remove('is-faq-animating', 'is-faq-closing');
+    // Native closed details already hide their answer, including from keyboard focus.
+    item.answer.inert = false;
+    item.summary.setAttribute('aria-expanded', String(item.expanded));
+  };
+
+  const setExpanded = (item, expanded) => {
+    // Capture the current rendered height before reversing an in-flight animation.
+    const startHeight = item.element.offsetHeight;
+    item.animation?.cancel();
+    item.animation = null;
+    item.expanded = expanded;
+    item.summary.setAttribute('aria-expanded', String(expanded));
+    if (!expanded && item.answer.contains(document.activeElement)) {
+      item.summary.focus({ preventScroll: true });
+    }
+    item.answer.inert = !expanded;
+
+    if (
+      reducedMotion.matches ||
+      typeof item.element.animate !== 'function'
+    ) {
+      finishAnimation(item);
+      return;
+    }
+
+    // Keep details open until the closing animation finishes; native hiding is instant.
+    item.element.style.height = `${startHeight}px`;
+    item.element.open = true;
+    item.element.classList.add('is-faq-animating');
+    item.element.classList.toggle('is-faq-closing', !expanded);
+    const style = getComputedStyle(item.element);
+    const borders =
+      (Number.parseFloat(style.borderTopWidth) || 0) +
+      (Number.parseFloat(style.borderBottomWidth) || 0);
+    const endHeight =
+      item.summary.offsetHeight +
+      (expanded ? item.answer.offsetHeight : 0) +
+      borders;
+    const animation = item.element.animate(
+      { height: [`${startHeight}px`, `${endHeight}px`] },
+      { duration: 320, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+    );
+    item.animation = animation;
+    animation.onfinish = () => {
+      if (item.animation === animation) finishAnimation(item);
+    };
+  };
+
+  const closeOtherItems = (current) => {
+    items.forEach((item) => {
+      if (item !== current && item.expanded) setExpanded(item, false);
+    });
+  };
+
+  items.forEach((item) => {
+    // JavaScript handles exclusivity so another answer can close smoothly.
+    item.element.removeAttribute('name');
+    item.summary.setAttribute('aria-expanded', String(item.expanded));
+    item.answer.inert = false;
+    item.summary.addEventListener('click', (event) => {
+      event.preventDefault();
+      const expanded = !item.expanded;
+      if (expanded) closeOtherItems(item);
+      setExpanded(item, expanded);
+    });
+    item.element.addEventListener('toggle', () => {
+      if (item.animation) return;
+      // Honor native/programmatic opening too, including browser text search.
+      item.expanded = item.element.open;
+      item.summary.setAttribute('aria-expanded', String(item.expanded));
+      item.answer.inert = false;
+      if (item.expanded) closeOtherItems(item);
+    });
+  });
+
+  const finishActiveAnimations = () => {
+    items.forEach((item) => {
+      if (item.animation) finishAnimation(item);
+    });
+  };
+  window.addEventListener('resize', finishActiveAnimations);
+  reducedMotion.addEventListener('change', () => {
+    if (reducedMotion.matches) finishActiveAnimations();
+  });
+}
+
 function initializeScrollReveals() {
   const targets = [...document.querySelectorAll('[data-scroll-reveal]')];
   if (!targets.length || !('IntersectionObserver' in window)) return;
@@ -690,5 +797,6 @@ initializeActiveNavigation();
 initializeCounters();
 initializeReviewCarousels();
 initializeMomentsGallery();
+initializeFaqAccordion();
 initializeFooter();
 initializeScrollReveals();

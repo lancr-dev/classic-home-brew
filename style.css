@@ -2352,8 +2352,12 @@ button[hidden] {
   border-bottom: 1px solid var(--color-border);
 }
 
-.faq-item[open] {
+.faq-item[open]:not(.is-faq-closing) {
   background: rgb(183 201 144 / 12%);
+}
+
+.faq-item.is-faq-animating {
+  overflow: hidden;
 }
 
 .faq-item summary {
@@ -2412,13 +2416,13 @@ button[hidden] {
   transition: transform 160ms ease;
 }
 
-.faq-item[open] .faq-toggle {
+.faq-item[open]:not(.is-faq-closing) .faq-toggle {
   border-color: var(--color-primary);
   background: var(--color-primary);
   color: var(--color-on-primary);
 }
 
-.faq-item[open] .faq-toggle::after {
+.faq-item[open]:not(.is-faq-closing) .faq-toggle::after {
   transform: rotate(90deg) scaleX(0);
 }
 
