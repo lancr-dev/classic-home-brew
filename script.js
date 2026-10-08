@@ -612,48 +612,72 @@ function initializeScrollReveals() {
   if (!targets.length || !('IntersectionObserver' in window)) return;
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const activeClass = 'is-scroll-revealing';
-  const observer = new IntersectionObserver(
+  const readyClass = 'is-scroll-ready';
+  const visibleClass = 'is-scroll-visible';
+  const revealObserver = new IntersectionObserver(
     (entries) => {
-      entries.forEach(({ target, isIntersecting }) => {
-        if (!isIntersecting) return;
-        // Reveal once per page visit, with no replay during small scroll changes.
-        observer.unobserve(target);
-        if (reducedMotion.matches || target.contains(document.activeElement)) {
-          return;
+      entries.forEach(({ target, isIntersecting, intersectionRatio }) => {
+        if (
+          !reducedMotion.matches &&
+          isIntersecting &&
+          intersectionRatio >= 0.2
+        ) {
+          target.classList.add(visibleClass);
         }
-        target.classList.add(activeClass);
       });
     },
-    { rootMargin: '0px 0px -24px 0px', threshold: 0 },
+    { threshold: 0.2 },
+  );
+  const resetObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(({ target, isIntersecting }) => {
+        if (!isIntersecting && !target.contains(document.activeElement)) {
+          target.classList.remove(visibleClass);
+        }
+      });
+    },
+    // Reset beyond the 50px rise so the transform cannot retrigger at the edge.
+    { rootMargin: '80px 0px', threshold: 0 },
   );
 
-  targets.forEach((target) => {
-    const bounds = target.getBoundingClientRect();
-    // Keep the first viewport (including restored scroll positions) fully visible.
-    if (bounds.top < window.innerHeight && bounds.bottom > 0) return;
-    observer.observe(target);
-  });
+  const observeTargets = (preserveVisible = false) => {
+    revealObserver.disconnect();
+    resetObserver.disconnect();
+    const visibleTargets = new Set(
+      preserveVisible
+        ? targets.filter((target) => {
+            const bounds = target.getBoundingClientRect();
+            return bounds.top < window.innerHeight && bounds.bottom > 0;
+          })
+        : [],
+    );
 
-  document.addEventListener('animationend', (event) => {
-    if (event.animationName === 'section-reveal') {
-      event.target.classList.remove(activeClass);
-    }
-  });
+    targets.forEach((target) => {
+      target.classList.remove(readyClass, visibleClass);
+      if (reducedMotion.matches) return;
+      if (
+        visibleTargets.has(target) ||
+        target.contains(document.activeElement)
+      ) {
+        target.classList.add(visibleClass);
+      }
+      target.classList.add(readyClass);
+      revealObserver.observe(target);
+      resetObserver.observe(target);
+    });
+  };
 
   document.addEventListener('focusin', (event) => {
     const target = event.target.closest('[data-scroll-reveal]');
     if (!target) return;
     // Keyboard users must never wait for content or focus indicators to appear.
-    observer.unobserve(target);
-    target.classList.remove(activeClass);
+    target.classList.add(visibleClass);
   });
 
   reducedMotion.addEventListener('change', () => {
-    if (reducedMotion.matches) {
-      targets.forEach((target) => target.classList.remove(activeClass));
-    }
+    observeTargets(true);
   });
+  observeTargets();
 }
 
 function initializeFooter() {
