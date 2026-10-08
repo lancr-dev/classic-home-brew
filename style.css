@@ -742,6 +742,10 @@ button[hidden] {
   line-height: 1.08;
 }
 
+.hero-coffee-phrase {
+  white-space: nowrap;
+}
+
 .hero h1 em {
   color: var(--color-decorative);
   /* Keep the tagline on one line within its responsive text column. */
@@ -3034,10 +3038,6 @@ button[hidden] {
 
   .hero h1 {
     font-size: clamp(3rem, 10vw, 4.8rem);
-  }
-
-  .hero-coffee-phrase {
-    white-space: nowrap;
   }
 
   .hero-description {
